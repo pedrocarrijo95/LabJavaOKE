@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-javaapp
+  labels:
+    app: javaapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: javaapp
+  template:
+    metadata:
+      labels:
+        app: javaapp
+    spec:
+      containers:
+      - name: javaapp
+        image: <imageurl>
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+        - name: ocirsecret  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-svc
+  labels:
+    app: javaapp
+  annotations:
+    oci.oraclecloud.com/load-balancer-type: "lb"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: javaapp

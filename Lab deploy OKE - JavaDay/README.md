@@ -70,8 +70,9 @@ Vamos precisar do Docker para fazer o build dos containers da aplicação e faze
 Abra o **Cloud Shell** e execute o comando abaixo substituindo o username, tenanacy ocid e código da região. E na senha utilize o Auth Token gerado anteriormente.
 
 ```bash
-docker login <Codigo Region>.ocir.io -u <tenancy-namespace>/<username>
+docker login <codigo Region>.ocir.io
 ```
+Insira seu namespace/username como **USERNAME**.
 
 Resultado:
 
