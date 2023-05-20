@@ -144,6 +144,11 @@ Vamos realizar o build da imagem do backend e depois fazer o push para o OCIR.
 
 ### Docker Build
 
+Antes do comando do Docker Build, execute o seguinte comando:
+```bash
+chmod +x ./gradlew
+```
+Após isso,
 Execute o comando:
 
 ```bash
