@@ -32,8 +32,6 @@ Vamos coletar algumas informações na tenancy do OCI que serão utilizadas ao l
 Tenancy Namespace:
 User Name:
 Auth Token:
-APM Endpoint:
-Public Key:
 Código da Região:
 ```
 
@@ -130,7 +128,7 @@ NAME           STATUS   ROLES   AGE     VERSION
 Abra o Cloud Shell e execute o git clone do código da aplicação (ou de alguma aplicação sua customizada que já contenha DockerFile):
 
 ```bash
-git clone https://github.com/ChristoPedro/labcodeappdev.git 
+git clone https://github.com/pedrocarrijo95/LabJavaOKE.git
 ```
 
 ## Configurar e fazer o Deploy do app
@@ -138,7 +136,8 @@ git clone https://github.com/ChristoPedro/labcodeappdev.git
 Navegue até a pasta do projeto:
 
 ```bash
-cd labcodeappdev/Backend/code
+cd LabJavaOKE
+cd appjava 
 ```
 
 Vamos realizar o build da imagem do backend e depois fazer o push para o OCIR.
@@ -148,7 +147,7 @@ Vamos realizar o build da imagem do backend e depois fazer o push para o OCIR.
 Execute o comando:
 
 ```bash
-docker build -t <Codigo Region>.ocir.io/<tenancy-namespace>/ftdeveloper/back .
+docker build -t <Codigo Region>.ocir.io/<tenancy-namespace>/javaday/appjava .
 ```
 
 ### Docker Push
@@ -156,7 +155,7 @@ docker build -t <Codigo Region>.ocir.io/<tenancy-namespace>/ftdeveloper/back .
 Depois da Build vamos fazer o push para o OCIR
 
 ```bash
-docker push <Codigo Region>.ocir.io/<tenancy-namespace>/ftdeveloper/back
+docker push <Codigo Region>.ocir.io/<tenancy-namespace>/javaday/appjava
 ```
 
 ### Criando Secret no Kubernetes
@@ -166,22 +165,16 @@ Vamos criar um secret que irá conter as informações do login do OCIR. Permiti
 Basta executar esse código, substituindo os valores
 
 ```bash
-kubectl create secret docker-registry ocisecret --docker-server=<region-key>.ocir.io --docker-username='<tenancy-namespace>/<oci-username>' --docker-password='<oci-auth-token>' --docker-email='<email-address>'
+kubectl create secret docker-registry registrysecret --docker-server=<region-key>.ocir.io --docker-username='<tenancy-namespace>/oracleidentitycloudservice/<oci-username(email)>' --docker-password='<oci-auth-token>' --docker-email='<email-address>'
 ````
 
 Resposta:
 
 ```bash
-secret/ocisecret created
+secret/registrysecret created
 ```
 
 ### Configurar o Manifesto de Kubernetes
-
-Vamos agora voltar uma pasta:
-
-```bash
-cd ..
-```
 
 Editar o código yaml para adicionar os parametros da imagem:
 
@@ -194,12 +187,12 @@ Pressione **i** para editar.
 Substitua os valores de **Image-Name** nas seguites linhas:
 
 ```note
-Image-Name = <Codigo Region>.ocir.io/<tenancy-namespace>/ftdeveloper/back
+Image-Name = <Codigo Region>.ocir.io/<tenancy-namespace>/javaday/appjava
 ```
 
 ```yaml
-      - name: backend
-        image: [Image-Name]:latest
+      - name: javaapp
+        image: <regionID>.ocir.io/id3kyspkytmr/javaday/appjava:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -215,12 +208,7 @@ Com o arquivo editado podemos executar o seguinte comando para realizar o deploy
 kubectl apply -f app.yaml
 ```
 
-Deve ter uma saida como a seguinte:
-
-```bash
-deployment.apps/cepapp-backend created
-service/cepapp-backend created
-```
+Deve ter uma saida como **CREATED**
 
 Podemos usar o seguinte código para saber se os pods já estão no ar:
 
@@ -237,6 +225,6 @@ Primeiro precisamos descobrir o IP do **Load Balancer** que foi criado neste dep
 kubectl get services
 ```
 
-Agora bastar copiar o **External IP** e colar como uma url em outra aba do navegador, adicionando no fim da URL a porta configurada **:8080**
+Agora bastar copiar o **External IP** e colar como uma url em outra aba do navegador, adicionando no fim da URL a porta configurada **:8080/javaday**
 
 ![teste](images/teste.png)
